@@ -26,17 +26,13 @@ export function ForumPostView({ post, onBack }: ForumPostViewProps) {
     const handleReplySubmit = () => {
         if (!newReply.trim()) return;
 
-        const replyData = {
-            postId: post.id,
-            authorId: 'user_current_001', // Placeholder for current user
-            content: newReply,
-        };
-
-        replyToForumPost(replyData);
+        replyToForumPost(post.id, newReply);
 
         // Add to local state to simulate real-time update
         setReplies(prev => [...prev, {
-            ...replyData,
+            postId: post.id,
+            authorId: 'user_current_001',
+            content: newReply,
             createdAt: new Date().toISOString(),
             isAcceptedAnswer: false
         }]);

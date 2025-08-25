@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { supabase } from '@/lib/supabase';
 import { persist } from 'zustand/middleware';
 import {
     AppStore,
@@ -7,7 +8,8 @@ import {
     User,
     DateString,
     UserQuizAttempt,
-    DeckID
+    DeckID,
+    Task
 } from '@/lib/types';
 import { generateStudyPlan } from '@/lib/utils/planGenerator';
 import { getTodayString } from '@/lib/utils/dateUtils';
@@ -64,6 +66,10 @@ export const useAppStore = create<AppStore>()(
                     if (!res.ok) throw new Error('Login failed');
                     const { user } = await res.json();
                     set({ currentUser: { id: user.id, email: user.email, name: user.email.split('@')[0] } as unknown as User });
+                    
+                    // Load user's study plan after successful login
+                    const { loadStudyPlan } = get();
+                    await loadStudyPlan();
                 } catch (e) {
                     console.error(e);
                 }
@@ -106,12 +112,16 @@ export const useAppStore = create<AppStore>()(
             updateStudyConfig: (config) => set((state) => ({
                 studyConfiguration: { ...state.studyConfiguration, ...config },
             })),
-            generateStudyPlan: () => {
+            generateStudyPlan: async () => {
                 const plan = generateStudyPlan(get().studyConfiguration);
                 set({ studyPlan: plan, currentVisibleDay: 1, activeFeature: FEATURES.STUDY_PLANNER });
+                
+                // Persist the new study plan to Supabase
+                const { persistStudyPlan } = get();
+                await persistStudyPlan();
             },
             viewDay: (dayNumber) => set({ currentVisibleDay: dayNumber }),
-            toggleTaskCompletion: (taskId) => {
+            toggleTaskCompletion: async (taskId) => {
                 set((state) => {
                     const newPlan = state.studyPlan.map(day => ({
                         ...day,
@@ -119,6 +129,10 @@ export const useAppStore = create<AppStore>()(
                     }));
                     return { studyPlan: newPlan };
                 });
+                
+                // Persist task completion changes to Supabase
+                const { persistStudyPlan } = get();
+                await persistStudyPlan();
             },
             deferTask: (_taskId) => { /* ... implementation ... */ },
             updateStreak: () => { /* ... implementation ... */ },
@@ -172,7 +186,7 @@ export const useAppStore = create<AppStore>()(
             joinStudyGroup: (groupId) => { console.log(`Joining group ${groupId}`); },
             sendGroupChatMessage: (message) => { console.log('Sending group message:', message); },
             createForumPost: (post) => { console.log('Creating forum post:', post); },
-            replyToForumPost: (reply) => { console.log('Replying to forum post:', reply); },
+            replyToForumPost: (postId: string, content: string) => { console.log('Replying to forum post:', { postId, content }); },
             fetchMentors: async (topicId?: TopicID) => {
                 if (topicId) {
                     return SAMPLE_MENTORS.filter(m => m.expertise.includes(topicId));
@@ -201,6 +215,126 @@ export const useAppStore = create<AppStore>()(
             },
             runAdaptivePlannerAnalysis: () => {
                 // ... implementation
+            },
+
+            // --- PERSISTENCE: STUDY PLAN (Supabase) ---
+            persistStudyPlan: async () => {
+                const state = get();
+                const { data: auth } = await supabase.auth.getUser();
+                const userId = auth.user?.id;
+                if (!userId) {
+                    console.warn('persistStudyPlan: no user logged in');
+                    return;
+                }
+
+                // Upsert study plan for the user
+                const planPayload = {
+                    user_id: userId,
+                    start_date: state.studyConfiguration.startDate,
+                    hours_per_day: state.studyConfiguration.hoursPerDay,
+                } as const;
+
+                const { data: planRow, error: planErr } = await supabase
+                    .from('study_plans')
+                    .upsert(planPayload, { onConflict: 'user_id' })
+                    .select()
+                    .single();
+
+                if (planErr || !planRow) {
+                    console.error('persistStudyPlan: plan upsert failed', planErr);
+                    return;
+                }
+
+                // Replace tasks for this plan
+                await supabase.from('study_tasks').delete().eq('plan_id', planRow.id);
+
+                const taskRows = state.studyPlan.flatMap(day =>
+                    day.tasks.map(t => ({
+                        id: t.id,
+                        plan_id: planRow.id,
+                        topic_id: t.topicId,
+                        kind: t.kind,
+                        duration_mins: t.durationMins,
+                        is_done: t.isDone,
+                        day_num: day.day,
+                    }))
+                );
+
+                if (taskRows.length > 0) {
+                    const { error: tasksErr } = await supabase.from('study_tasks').insert(taskRows);
+                    if (tasksErr) {
+                        console.error('persistStudyPlan: tasks insert failed', tasksErr);
+                    }
+                }
+            },
+
+            loadStudyPlan: async () => {
+                const { data: auth } = await supabase.auth.getUser();
+                const userId = auth.user?.id;
+                if (!userId) {
+                    console.warn('loadStudyPlan: no user logged in');
+                    return;
+                }
+
+                const { data: planRow, error: planErr } = await supabase
+                    .from('study_plans')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .single();
+
+                if (planErr || !planRow) {
+                    // No plan yet
+                    return;
+                }
+
+                const { data: tasks, error: tasksErr } = await supabase
+                    .from('study_tasks')
+                    .select('*')
+                    .eq('plan_id', planRow.id)
+                    .order('day_num', { ascending: true });
+
+                if (tasksErr) {
+                    console.error('loadStudyPlan: tasks fetch failed', tasksErr);
+                    return;
+                }
+
+                type TaskRow = {
+                    id: string;
+                    plan_id: string;
+                    topic_id: TopicID;
+                    kind: Task['kind'];
+                    duration_mins: number;
+                    is_done: boolean;
+                    day_num: number;
+                };
+
+                const byDay = new Map<number, { day: number; tasks: Task[] }>();
+                for (const row of (tasks as TaskRow[] | null) ?? []) {
+                    if (!byDay.has(row.day_num)) {
+                        byDay.set(row.day_num, { day: row.day_num, tasks: [] as Task[] });
+                    }
+                    byDay.get(row.day_num)!.tasks.push({
+                        id: row.id,
+                        topicId: row.topic_id,
+                        kind: row.kind,
+                        durationMins: row.duration_mins,
+                        isDone: row.is_done,
+                    });
+                }
+
+                const restoredPlan = Array.from(byDay.values())
+                    .sort((a, b) => a.day - b.day)
+                    .map(d => ({ day: d.day, date: getTodayString(), tasks: d.tasks }));
+
+                set(state => ({
+                    studyConfiguration: {
+                        ...state.studyConfiguration,
+                        startDate: planRow.start_date,
+                        hoursPerDay: planRow.hours_per_day,
+                    },
+                    studyPlan: restoredPlan,
+                    currentVisibleDay: restoredPlan[0]?.day ?? 1,
+                }));
             },
         }),
         {

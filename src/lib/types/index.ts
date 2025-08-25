@@ -310,14 +310,18 @@ export interface AppActions {
     switchRole: () => void;
     navigateTo: (feature: string) => void;
     updateStudyConfig: (config: Partial<StudyConfig>) => void;
-    generateStudyPlan: () => void;
+    generateStudyPlan: () => Promise<void>;
     viewDay: (dayNumber: number) => void;
-    toggleTaskCompletion: (taskId: TaskID) => void;
+    toggleTaskCompletion: (taskId: TaskID) => Promise<void>;
     deferTask: (taskId: TaskID) => void;
     updateStreak: () => void;
     recordMcqResult: (topicId: TopicID, correct: number, total: number) => void;
     saveMockTest: (runData: MockRun) => void;
     resetApplicationState: () => void;
+
+    // Study planner persistence
+    persistStudyPlan: () => Promise<void>;
+    loadStudyPlan: () => Promise<void>;
 
     // New actions from spec
     fetchCurrentAffairs: (date: DateString) => Promise<CurrentAffairsArticle[]>;
@@ -337,7 +341,7 @@ export interface AppActions {
     joinStudyGroup: (groupId: GroupID) => void;
     sendGroupChatMessage: (message: Omit<GroupChatMessage, 'sentAt'>) => void;
     createForumPost: (post: Omit<ForumPost, 'id' | 'createdAt' | 'isPinned' | 'isLocked'>) => void;
-    replyToForumPost: (reply: Omit<ForumReply, 'createdAt' | 'isAcceptedAnswer'>) => void;
+    replyToForumPost: (postId: string, content: string) => void;
     fetchMentors: (topicId?: TopicID) => Promise<MentorProfile[]>;
     bookMentorshipSession: (sessionData: { mentorId: MentorID, time: ISOString }) => Promise<{ success: boolean, sessionId: SessionID }>;
     fetchUpcomingWebinars: () => Promise<Webinar[]>;

@@ -34,8 +34,8 @@ export function OnboardingFlow() {
         }
     };
 
-    const handlePlanGeneration = () => {
-        generateStudyPlan();
+    const handlePlanGeneration = async () => {
+        await generateStudyPlan();
         // The Zustand store will automatically navigate to the study planner
     };
 
