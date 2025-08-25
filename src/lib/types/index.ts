@@ -300,6 +300,7 @@ export interface AppState {
 
 export interface AppActions {
     // Existing actions
+    loginWithPassword: (email: string, password: string) => Promise<void>;
     signIn: (email: string, name: string) => void;
     signOut: () => void;
     upgradeToPro: () => void;
@@ -334,7 +335,7 @@ export interface AppActions {
     joinStudyGroup: (groupId: GroupID) => void;
     sendGroupChatMessage: (message: Omit<GroupChatMessage, 'sentAt'>) => void;
     createForumPost: (post: Omit<ForumPost, 'id' | 'createdAt' | 'isPinned' | 'isLocked'>) => void;
-    replyToForumPost: (postId: string, content: string) => void;
+    replyToForumPost: (reply: Omit<ForumReply, 'createdAt' | 'isAcceptedAnswer'>) => void;
     fetchMentors: (topicId?: TopicID) => Promise<MentorProfile[]>;
     bookMentorshipSession: (sessionData: { mentorId: MentorID, time: ISOString }) => Promise<{ success: boolean, sessionId: SessionID }>;
     fetchUpcomingWebinars: () => Promise<Webinar[]>;

@@ -12,15 +12,19 @@ interface AuthScreenProps {
 }
 
 export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
-    const { signIn } = useAppStore();
+    const { signIn, loginWithPassword } = useAppStore();
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
     const [isLogin, setIsLogin] = useState(true);
 
-    const handleAuth = () => {
-        if (email && (isLogin || name)) {
-            // In a real app, you'd have proper validation and API calls
+    const handleAuth = async () => {
+        if (!email || (!isLogin && !name)) return;
+        if (isLogin) {
+            await loginWithPassword(email, password);
+            onAuthSuccess();
+        } else {
+            // For now fallback to local sign-in simulation
             signIn(email, name || 'Returning User');
             onAuthSuccess();
         }

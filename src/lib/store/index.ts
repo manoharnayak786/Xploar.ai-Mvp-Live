@@ -54,6 +54,20 @@ export const useAppStore = create<AppStore>()(
                 const user: User = { id: `user_${Date.now()}`, email, name };
                 set({ currentUser: user });
             },
+            loginWithPassword: async (email: string, _password: string) => {
+                try {
+                    const res = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password: _password })
+                    });
+                    if (!res.ok) throw new Error('Login failed');
+                    const { user } = await res.json();
+                    set({ currentUser: { id: user.id, email: user.email, name: user.email.split('@')[0] } as unknown as User });
+                } catch (e) {
+                    console.error(e);
+                }
+            },
             signOut: () => set({ currentUser: null, activeFeature: FEATURES.ONBOARDING }),
             upgradeToPro: () => set({ isProUser: true }),
             downgradeFromPro: () => set({ isProUser: false }), // New Action
@@ -132,9 +146,7 @@ export const useAppStore = create<AppStore>()(
             joinStudyGroup: (groupId) => { console.log(`Joining group ${groupId}`); },
             sendGroupChatMessage: (message) => { console.log('Sending group message:', message); },
             createForumPost: (post) => { console.log('Creating forum post:', post); },
-            replyToForumPost: (postId: string, content: string) => {
-                console.log('Replying to forum post:', { postId, content });
-            },
+            replyToForumPost: (reply) => { console.log('Replying to forum post:', reply); },
             fetchMentors: async (topicId?: TopicID) => {
                 if (topicId) {
                     return SAMPLE_MENTORS.filter(m => m.expertise.includes(topicId));
