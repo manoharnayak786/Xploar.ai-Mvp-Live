@@ -7,7 +7,7 @@ import { FEATURES } from '@/lib/utils/constants';
 // This component serves as the main entry point
 // The actual rendering is handled by MainLayout based on activeFeature
 export default function HomePage() {
-  const { currentUser, activeFeature, navigateTo } = useAppStore();
+  const { currentUser, navigateTo } = useAppStore();
 
   useEffect(() => {
     // If user is not authenticated, redirect to onboarding

@@ -6,7 +6,6 @@ import {
     AppState,
     TopicID,
     User,
-    DateString,
     UserQuizAttempt,
     DeckID,
     Task
@@ -335,6 +334,167 @@ export const useAppStore = create<AppStore>()(
                     studyPlan: restoredPlan,
                     currentVisibleDay: restoredPlan[0]?.day ?? 1,
                 }));
+            },
+
+            // AI Evaluation Functions
+            saveAIEvaluation: async (evaluation: {
+                genre: string;
+                question: string;
+                essay: string;
+                accuracy: number;
+                coverage: number;
+                timeEfficiency: number;
+                recommendations: string[];
+                feedback: string;
+                wordCount: number;
+            }) => {
+                const { data: auth } = await supabase.auth.getUser();
+                const userId = auth.user?.id;
+                if (!userId) {
+                    console.warn('saveAIEvaluation: no user logged in');
+                    return;
+                }
+
+                const { error } = await supabase.from('ai_evaluations').insert({
+                    user_id: userId,
+                    genre: evaluation.genre,
+                    question: evaluation.question,
+                    essay_text: evaluation.essay,
+                    word_count: evaluation.wordCount,
+                    accuracy_score: evaluation.accuracy,
+                    coverage_score: evaluation.coverage,
+                    time_efficiency: evaluation.timeEfficiency,
+                    recommendations: evaluation.recommendations,
+                    ai_feedback: evaluation.feedback,
+                    evaluation_time_ms: Date.now()
+                });
+
+                if (error) {
+                    console.error('saveAIEvaluation failed:', error);
+                } else {
+                    // Trigger performance analytics update
+                    get().updatePerformanceAnalytics('essay_evaluation', undefined, evaluation.genre, (evaluation.accuracy + evaluation.coverage + evaluation.timeEfficiency) / 3);
+                }
+            },
+
+            updatePerformanceAnalytics: async (
+                activityType: string,
+                topicId?: string,
+                genre?: string,
+                score?: number,
+                timeSpent?: number
+            ) => {
+                const { data: auth } = await supabase.auth.getUser();
+                const userId = auth.user?.id;
+                if (!userId) return;
+
+                const { error } = await supabase.from('performance_analytics').insert({
+                    user_id: userId,
+                    activity_type: activityType,
+                    topic_id: topicId,
+                    genre: genre,
+                    score: score,
+                    time_spent_minutes: timeSpent
+                });
+
+                if (error) {
+                    console.error('updatePerformanceAnalytics failed:', error);
+                }
+            },
+
+            fetchAIEvaluations: async () => {
+                const { data: auth } = await supabase.auth.getUser();
+                const userId = auth.user?.id;
+                if (!userId) return [];
+
+                const { data, error } = await supabase
+                    .from('ai_evaluations')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .order('submitted_at', { ascending: false })
+                    .limit(10);
+
+                if (error) {
+                    console.error('fetchAIEvaluations failed:', error);
+                    return [];
+                }
+
+                return data || [];
+            },
+
+            fetchPerformanceAnalytics: async () => {
+                const { data: auth } = await supabase.auth.getUser();
+                const userId = auth.user?.id;
+                if (!userId) return [];
+
+                const { data, error } = await supabase
+                    .from('performance_analytics')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .order('created_at', { ascending: false })
+                    .limit(50);
+
+                if (error) {
+                    console.error('fetchPerformanceAnalytics failed:', error);
+                    return [];
+                }
+
+                return data || [];
+            },
+
+            fetchUserRecommendations: async () => {
+                const { data: auth } = await supabase.auth.getUser();
+                const userId = auth.user?.id;
+                if (!userId) return [];
+
+                const { data, error } = await supabase
+                    .from('user_recommendations')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .eq('is_completed', false)
+                    .eq('is_active', true)
+                    .order('priority_score', { ascending: false })
+                    .limit(10);
+
+                if (error) {
+                    console.error('fetchUserRecommendations failed:', error);
+                    return [];
+                }
+
+                return data || [];
+            },
+
+            markRecommendationCompleted: async (recommendationId: string) => {
+                const { error } = await supabase
+                    .from('user_recommendations')
+                    .update({
+                        is_completed: true,
+                        completed_at: new Date().toISOString()
+                    })
+                    .eq('id', recommendationId);
+
+                if (error) {
+                    console.error('markRecommendationCompleted failed:', error);
+                }
+            },
+
+            fetchUserProgress: async () => {
+                const { data: auth } = await supabase.auth.getUser();
+                const userId = auth.user?.id;
+                if (!userId) return [];
+
+                const { data, error } = await supabase
+                    .from('user_progress')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .order('last_practiced_at', { ascending: false });
+
+                if (error) {
+                    console.error('fetchUserProgress failed:', error);
+                    return [];
+                }
+
+                return data || [];
             },
         }),
         {

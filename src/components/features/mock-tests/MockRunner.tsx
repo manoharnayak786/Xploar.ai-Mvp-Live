@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, ChevronLeft, ChevronRight, Flag, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -28,7 +28,10 @@ export function MockRunner({ topicId, useNegativeMarking, onComplete }: MockRunn
     const [showResults, setShowResults] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
 
-    const questions = MCQ_BANK[topicId]?.slice(0, APP_CONFIG.QUESTIONS_PER_MOCK) || [];
+    const questions = useMemo(() =>
+        MCQ_BANK[topicId]?.slice(0, APP_CONFIG.QUESTIONS_PER_MOCK) || [],
+        [topicId]
+    );
     const topic = UPSC_FOUNDATION.find(t => t.id === topicId);
 
     const handleSubmit = useCallback(() => {

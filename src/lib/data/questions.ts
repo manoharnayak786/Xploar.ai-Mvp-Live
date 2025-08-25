@@ -26,6 +26,31 @@ export const MCQ_BANK: Record<TopicID, Question[]> = {
             "stem": "Liberty of thought, expression, belief, faith and worship is mentioned in?",
             "options": ["Fundamental Rights", "Preamble", "DPSP", "Fundamental Duties"],
             "ans": 1
+        },
+        {
+            "stem": "The Preamble declares India to be a 'Union of States'. What does this signify?",
+            "options": ["States have right to secede", "India is an indestructible union", "States can form separate union", "None of the above"],
+            "ans": 1
+        },
+        {
+            "stem": "Which of the following is NOT mentioned in the Preamble?",
+            "options": ["Justice", "Liberty", "Equality", "Fraternity"],
+            "ans": 3
+        },
+        {
+            "stem": "The Preamble was amended for the first time by which amendment?",
+            "options": ["24th", "42nd", "44th", "52nd"],
+            "ans": 1
+        },
+        {
+            "stem": "Who described the Preamble as the 'Key to the Constitution'?",
+            "options": ["Dr. BR Ambedkar", "Jawaharlal Nehru", "Mahatma Gandhi", "Sardar Patel"],
+            "ans": 0
+        },
+        {
+            "stem": "The Preamble to the Constitution was adopted on?",
+            "options": ["26th January 1950", "26th November 1949", "15th August 1947", "2nd October 1952"],
+            "ans": 1
         }
     ],
     "polity_fr": [

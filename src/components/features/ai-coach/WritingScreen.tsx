@@ -20,6 +20,10 @@ export function WritingScreen({ genre, question, onSubmit }: WritingScreenProps)
     const [image, setImage] = useState<string | null>(null);
 
     const handleSubmit = useCallback(() => {
+        if (essay.trim().length < 50) {
+            alert('Please write at least 50 characters for meaningful evaluation.');
+            return;
+        }
         onSubmit(essay);
     }, [essay, onSubmit]);
 

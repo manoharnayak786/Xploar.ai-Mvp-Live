@@ -20,9 +20,33 @@ export function AIEvaluation() {
         setView('writing');
     };
 
-    const handleSubmit = (submittedEssay: string) => {
+    const handleSubmit = async (submittedEssay: string) => {
         setEssay(submittedEssay);
         setView('results');
+    };
+
+    const handleSaveEvaluation = async (evaluation: {
+        accuracy: number;
+        coverage: number;
+        timeEfficiency: number;
+        recommendations: string[];
+        feedback: string;
+        wordCount: number;
+    }) => {
+        if (!genre || !question || !essay) return;
+
+        // Import store dynamically to avoid circular dependency
+        const { useAppStore } = await import('@/lib/store');
+
+        const evaluationData = {
+            genre,
+            question,
+            essay,
+            ...evaluation
+        };
+
+        // Save to database
+        await useAppStore.getState().saveAIEvaluation(evaluationData);
     };
 
     const handleRestart = () => {
@@ -39,7 +63,13 @@ export function AIEvaluation() {
             case 'writing':
                 return <WritingScreen genre={genre!} question={question} onSubmit={handleSubmit} />;
             case 'results':
-                return <ResultsScreen genre={genre!} question={question} essay={essay} onRestart={handleRestart} />;
+                return <ResultsScreen
+                    genre={genre!}
+                    question={question}
+                    essay={essay}
+                    onRestart={handleRestart}
+                    onSaveEvaluation={handleSaveEvaluation}
+                />;
             default:
                 return <SetupScreen onStart={handleStart} />;
         }

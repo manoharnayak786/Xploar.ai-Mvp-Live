@@ -273,11 +273,12 @@ export interface AIRecommendation {
     id: RecommendationID;
     userId: UserID;
     createdAt: ISOString;
-    type: "revise_topic" | "attempt_mock" | "read_article" | "watch_video";
+    type: "revise_topic" | "attempt_mock" | "read_article" | "watch_video" | "practice_essay";
     relatedTopicId?: TopicID;
     relatedResourceId?: ResourceID | ArticleID;
     reasoning: string;
     isCompleted: boolean;
+    priority?: number;
 }
 
 
@@ -348,6 +349,61 @@ export interface AppActions {
     fetchRecordedWebinars: () => Promise<Webinar[]>;
     fetchAIRecommendations: () => Promise<AIRecommendation[]>;
     markRecommendationAsDone: (recommendationId: RecommendationID) => void;
+
+    // AI Evaluation Functions
+    saveAIEvaluation: (evaluation: {
+        genre: string;
+        question: string;
+        essay: string;
+        accuracy: number;
+        coverage: number;
+        timeEfficiency: number;
+        recommendations: string[];
+        feedback: string;
+        wordCount: number;
+    }) => Promise<void>;
+    updatePerformanceAnalytics: (activityType: string, topicId?: string, genre?: string, score?: number, timeSpent?: number) => Promise<void>;
+    fetchAIEvaluations: () => Promise<Array<{
+        id: string;
+        genre: string;
+        question: string;
+        essay_text: string;
+        word_count: number;
+        accuracy_score: number;
+        coverage_score: number;
+        time_efficiency: number;
+        recommendations: string[];
+        ai_feedback: string;
+        submitted_at: string;
+        evaluation_time_ms: number;
+    }>>;
+    fetchPerformanceAnalytics: () => Promise<Array<{
+        id: string;
+        activity_type: string;
+        topic_id?: string;
+        genre?: string;
+        score?: number;
+        time_spent_minutes?: number;
+        created_at: string;
+    }>>;
+    fetchUserRecommendations: () => Promise<Array<{
+        id: string;
+        recommendation_type: string;
+        reasoning: string;
+        is_completed: boolean;
+        related_topic_id?: string;
+        priority_score: number;
+        created_at: string;
+    }>>;
+    markRecommendationCompleted: (recommendationId: string) => Promise<void>;
+    fetchUserProgress: () => Promise<Array<{
+        id: string;
+        topic_id: string;
+        mastery_level: number;
+        total_questions_attempted: number;
+        correct_answers: number;
+        last_practiced_at: string;
+    }>>;
     runAdaptivePlannerAnalysis: () => void;
 }
 

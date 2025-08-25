@@ -4,10 +4,27 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/lib/store';
 
+type AuthStatus = {
+    user?: { id: string; email?: string } | null;
+    error?: string;
+} | null;
+
+type SessionData = {
+    user?: string;
+    expires_at?: number;
+} | null;
+
+type DbStatus = {
+    success?: boolean;
+    message?: string;
+    error?: string;
+    code?: string;
+} | null;
+
 export function AuthDebug() {
-    const [authStatus, setAuthStatus] = useState<any>(null);
-    const [sessionData, setSessionData] = useState<any>(null);
-    const [dbStatus, setDbStatus] = useState<any>(null);
+    const [authStatus, setAuthStatus] = useState<AuthStatus>(null);
+    const [sessionData, setSessionData] = useState<SessionData>(null);
+    const [dbStatus, setDbStatus] = useState<DbStatus>(null);
     const { currentUser, studyPlan } = useAppStore();
 
     useEffect(() => {
@@ -26,20 +43,20 @@ export function AuthDebug() {
 
             const { data: { session } } = await supabase.auth.getSession();
             setSessionData(session ? { user: session.user?.email, expires_at: session.expires_at } : null);
-        } catch (error) {
+        } catch {
             setAuthStatus({ error: 'Failed to check auth status' });
         }
     };
 
     const checkDatabaseConnection = async () => {
         try {
-            const { data, error } = await supabase.from('study_plans').select('count').limit(1);
+            const { error } = await supabase.from('study_plans').select('count').limit(1);
             if (error) {
                 setDbStatus({ error: error.message, code: error.code });
             } else {
                 setDbStatus({ success: true, message: 'Database connection OK' });
             }
-        } catch (error) {
+        } catch {
             setDbStatus({ error: 'Database connection failed' });
         }
     };

@@ -13,9 +13,7 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
 export function StudyPlanner() {
-    console.log('📅 StudyPlanner component rendered!');
-    console.log('Study plan length:', useAppStore.getState().studyPlan.length);
-    console.log('Current user:', useAppStore.getState().currentUser);
+
 
     const [dayRange, setDayRange] = useState({ start: 1, end: 5 });
     const {
