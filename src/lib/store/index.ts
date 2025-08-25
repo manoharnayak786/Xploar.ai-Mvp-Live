@@ -134,7 +134,7 @@ export const useAppStore = create<AppStore>()(
                 const { persistStudyPlan } = get();
                 await persistStudyPlan();
             },
-            deferTask: (_taskId) => { /* ... implementation ... */ },
+            deferTask: () => { /* ... implementation ... */ },
             updateStreak: () => { /* ... implementation ... */ },
             recordMcqResult: (topicId, correct, total) => {
                 set((state) => ({
@@ -149,10 +149,10 @@ export const useAppStore = create<AppStore>()(
 
             // --- DATA FETCHING & MUTATION ACTIONS ---
 
-            fetchCurrentAffairs: async (_date: DateString) => {
+            fetchCurrentAffairs: async () => {
                 return SAMPLE_CURRENT_AFFAIRS;
             },
-            fetchDailyQuiz: async (_date: DateString) => {
+            fetchDailyQuiz: async () => {
                 return SAMPLE_DAILY_QUIZ;
             },
             submitQuizAttempt: (attempt: UserQuizAttempt) => {

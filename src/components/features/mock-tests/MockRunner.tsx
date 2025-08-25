@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, ChevronLeft, ChevronRight, Flag, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -31,7 +31,7 @@ export function MockRunner({ topicId, useNegativeMarking, onComplete }: MockRunn
     const questions = MCQ_BANK[topicId]?.slice(0, APP_CONFIG.QUESTIONS_PER_MOCK) || [];
     const topic = UPSC_FOUNDATION.find(t => t.id === topicId);
 
-    const handleSubmit = () => {
+    const handleSubmit = useCallback(() => {
         const score = calculateMockScore(questions, answers, useNegativeMarking);
         const timeTaken = APP_CONFIG.MOCK_TEST_DURATION - Math.floor(timeLeft / 60);
 
@@ -48,7 +48,7 @@ export function MockRunner({ topicId, useNegativeMarking, onComplete }: MockRunn
         saveMockTest(mockRun);
         setIsSubmitted(true);
         setShowResults(true);
-    };
+    }, [questions, answers, useNegativeMarking, timeLeft, topicId, saveMockTest]);
 
     useEffect(() => {
         if (timeLeft > 0 && !isSubmitted) {

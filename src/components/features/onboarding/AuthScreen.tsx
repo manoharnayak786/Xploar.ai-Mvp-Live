@@ -12,7 +12,7 @@ interface AuthScreenProps {
 }
 
 export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
-    const { signIn, loginWithPassword, signUpWithPassword, requestPasswordReset } = useAppStore();
+    const { loginWithPassword, signUpWithPassword, requestPasswordReset } = useAppStore();
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
@@ -33,7 +33,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
         if (!email) return;
         await requestPasswordReset(email);
         alert('Password reset email sent (check your inbox)');
-    }
+    };
 
     return (
         <div className="max-w-md mx-auto">
