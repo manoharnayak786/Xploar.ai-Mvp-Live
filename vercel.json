@@ -1,0 +1,1 @@
+{"functions": {"app/api/**/*.ts": {"maxDuration": 30}},"regions": ["iad1", "sfo1", "hnd1", "fra1", "cdg1"]}
