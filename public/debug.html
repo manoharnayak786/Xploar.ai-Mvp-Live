@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xploar Sidebar Debug Tool</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header p {
+            opacity: 0.8;
+            font-size: 1.2em;
+        }
+        .results {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 5px;
+        }
+        .status.good {
+            background: #4CAF50;
+            color: white;
+        }
+        .status.warning {
+            background: #FF9800;
+            color: white;
+        }
+        .status.error {
+            background: #f44336;
+            color: white;
+        }
+        .button {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            transition: transform 0.2s;
+        }
+        .button:hover {
+            transform: scale(1.05);
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .feature-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .feature-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .feature-item.testing {
+            background: rgba(255, 165, 0, 0.3);
+        }
+        .feature-item.success {
+            background: rgba(76, 175, 80, 0.3);
+        }
+        .feature-item.error {
+            background: rgba(244, 67, 54, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Xploar Sidebar Debug Tool</h1>
+            <p>Automated debugging for your deployed application</p>
+        </div>
+
+        <div class="section">
+            <h2>🎯 Quick Test All Features</h2>
+            <p>Click any feature below to test it automatically:</p>
+            <div class="feature-grid" id="featureGrid">
+                <!-- Features will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📊 Debug Results</h2>
+            <div id="results" class="results">Click "Run Debug" to start testing...</div>
+        </div>
+
+        <div class="section">
+            <h2>🔧 Actions</h2>
+            <button class="button" onclick="runDebug()">🔍 Run Debug</button>
+            <button class="button" onclick="testAllFeatures()">🧪 Test All Features</button>
+            <button class="button" onclick="fixAuthentication()">🔐 Fix Authentication</button>
+            <button class="button" onclick="clearResults()">🗑️ Clear Results</button>
+        </div>
+
+        <div class="section">
+            <h2>📋 Status</h2>
+            <div id="status">
+                <span class="status warning" id="authStatus">🔐 Auth: Checking...</span>
+                <span class="status warning" id="envStatus">🌍 Env: Checking...</span>
+                <span class="status warning" id="navStatus">🧭 Nav: Checking...</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>💡 Recommendations</h2>
+            <div id="recommendations" class="results">
+                Run the debug tool to see recommendations...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let debugResults = null;
+        const features = [
+            { id: 'study-planner', name: '📅 Study Plan', icon: '📅' },
+            { id: 'mock-tests', name: '🎯 Mock Tests', icon: '🎯' },
+            { id: 'ai-coach', name: '🤖 AI Coach', icon: '🤖' },
+            { id: 'community', name: '👥 Community', icon: '👥' },
+            { id: 'content-hub', name: '📚 Content Hub', icon: '📚' },
+            { id: 'daily-challenge', name: '🎯 Daily Challenge', icon: '🎯' },
+            { id: 'debate', name: '💬 AI Debate', icon: '💬' },
+            { id: 'interview', name: '🎤 Mock Interview', icon: '🎤' },
+            { id: 'mentor-connect', name: '👨‍🏫 Mentors', icon: '👨‍🏫' },
+            { id: 'recommendations', name: '💡 AI Insights', icon: '💡' },
+            { id: 'syllabus', name: '📖 Syllabus', icon: '📖' },
+            { id: 'multi-mode-learning', name: '🎓 Learning Hub', icon: '🎓' },
+            { id: 'progress', name: '📊 Progress', icon: '📊' },
+            { id: 'settings', name: '⚙️ Settings', icon: '⚙️' }
+        ];
+
+        // Initialize feature grid
+        function initFeatureGrid() {
+            const grid = document.getElementById('featureGrid');
+            features.forEach(feature => {
+                const item = document.createElement('div');
+                item.className = 'feature-item';
+                item.innerHTML = `
+                    <div style="font-size: 2em; margin-bottom: 10px;">${feature.icon}</div>
+                    <div style="font-weight: bold;">${feature.name}</div>
+                    <div style="font-size: 0.8em; opacity: 0.8;">${feature.id}</div>
+                `;
+                item.onclick = () => testFeature(feature.id);
+                grid.appendChild(item);
+            });
+        }
+
+        // Run comprehensive debug
+        async function runDebug() {
+            updateResults('🔍 Running comprehensive debug...\n');
+
+            try {
+                debugResults = await runDebugScript();
+                displayResults(debugResults);
+                updateStatusIndicators(debugResults);
+            } catch (error) {
+                updateResults(`❌ Debug failed: ${error.message}\n`);
+            }
+        }
+
+        // Run the actual debug script
+        async function runDebugScript() {
+            return new Promise((resolve) => {
+                const results = {
+                    timestamp: new Date().toISOString(),
+                    issues: [],
+                    checks: {},
+                    recommendations: []
+                };
+
+                // 1. Check Authentication
+                try {
+                    const state = JSON.parse(localStorage.getItem('xploar_app_state') || '{}');
+                    const currentUser = state.state?.currentUser;
+
+                    results.checks.authentication = {
+                        authenticated: !!currentUser,
+                        user: currentUser
+                    };
+
+                    if (!currentUser) {
+                        results.issues.push('❌ No current user found - sidebar will not show');
+                        results.recommendations.push('Complete authentication flow first');
+                    }
+                } catch (e) {
+                    results.issues.push('❌ Error reading app state: ' + e.message);
+                }
+
+                // 2. Check Environment Variables
+                const requiredVars = [
+                    'NEXT_PUBLIC_SUPABASE_URL',
+                    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+                    'NEXT_PUBLIC_SITE_URL'
+                ];
+
+                requiredVars.forEach(varName => {
+                    if (typeof window !== 'undefined' && !window[varName]) {
+                        results.issues.push(`❌ Environment variable missing: ${varName}`);
+                        results.recommendations.push('Set environment variables in Vercel dashboard');
+                    }
+                });
+
+                resolve(results);
+            });
+        }
+
+        // Test a specific feature
+        function testFeature(featureId) {
+            const featureItem = document.querySelector(`[onclick*="${featureId}"]`);
+            if (featureItem) {
+                featureItem.classList.add('testing');
+            }
+
+            try {
+                // Set the active feature
+                const currentState = JSON.parse(localStorage.getItem('xploar_app_state') || '{}');
+                currentState.state = currentState.state || {};
+                currentState.state.activeFeature = featureId;
+                currentState.state.currentUser = currentState.state.currentUser || {
+                    id: 'test_user',
+                    email: 'test@example.com',
+                    name: 'Test User'
+                };
+
+                localStorage.setItem('xploar_app_state', JSON.stringify(currentState));
+
+                if (featureItem) {
+                    featureItem.classList.remove('testing');
+                    featureItem.classList.add('success');
+                }
+
+                updateResults(`✅ Successfully set active feature to: ${featureId}\n`);
+                updateResults(`🔄 Refresh the page to see the ${featureId} feature\n\n`);
+            } catch (error) {
+                if (featureItem) {
+                    featureItem.classList.remove('testing');
+                    featureItem.classList.add('error');
+                }
+                updateResults(`❌ Failed to test ${featureId}: ${error.message}\n`);
+            }
+        }
+
+        // Test all features
+        function testAllFeatures() {
+            updateResults('🧪 Testing all features...\n\n');
+            features.forEach((feature, index) => {
+                setTimeout(() => testFeature(feature.id), index * 500);
+            });
+        }
+
+        // Fix authentication
+        function fixAuthentication() {
+            const testUser = {
+                id: 'test_user',
+                email: 'test@example.com',
+                name: 'Test User'
+            };
+
+            const testState = {
+                state: {
+                    currentUser: testUser,
+                    activeFeature: 'study-planner'
+                },
+                version: 3
+            };
+
+            localStorage.setItem('xploar_app_state', JSON.stringify(testState));
+            updateResults('🔐 Set test authentication\n');
+            updateResults('🔄 Refresh the page to see the sidebar\n\n');
+        }
+
+        // Display results
+        function displayResults(results) {
+            let output = `📊 DEBUG REPORT - ${new Date().toLocaleString()}\n`;
+            output += '=' .repeat(50) + '\n\n';
+
+            // Authentication
+            output += '🔐 AUTHENTICATION:\n';
+            if (results.checks.authentication?.authenticated) {
+                output += `✅ User: ${results.checks.authentication.user?.name || 'Unknown'}\n`;
+                output += `📧 Email: ${results.checks.authentication.user?.email || 'Unknown'}\n`;
+            } else {
+                output += '❌ Not authenticated - sidebar will not show\n';
+            }
+            output += '\n';
+
+            // Issues
+            if (results.issues.length > 0) {
+                output += '🔴 ISSUES FOUND:\n';
+                results.issues.forEach((issue, index) => {
+                    output += `${index + 1}. ${issue}\n`;
+                });
+                output += '\n';
+            }
+
+            // Recommendations
+            if (results.recommendations.length > 0) {
+                output += '💡 RECOMMENDATIONS:\n';
+                results.recommendations.forEach((rec, index) => {
+                    output += `${index + 1}. ${rec}\n`;
+                });
+                output += '\n';
+            }
+
+            updateResults(output);
+        }
+
+        // Update status indicators
+        function updateStatusIndicators(results) {
+            const authStatus = document.getElementById('authStatus');
+            const envStatus = document.getElementById('envStatus');
+            const navStatus = document.getElementById('navStatus');
+
+            // Auth status
+            if (results.checks.authentication?.authenticated) {
+                authStatus.className = 'status good';
+                authStatus.textContent = '🔐 Auth: OK';
+            } else {
+                authStatus.className = 'status error';
+                authStatus.textContent = '🔐 Auth: Failed';
+            }
+
+            // Environment status
+            const hasEnvIssues = results.issues.some(issue => issue.includes('Environment variable'));
+            if (!hasEnvIssues) {
+                envStatus.className = 'status good';
+                envStatus.textContent = '🌍 Env: OK';
+            } else {
+                envStatus.className = 'status error';
+                envStatus.textContent = '🌍 Env: Issues';
+            }
+
+            // Navigation status
+            navStatus.className = 'status good';
+            navStatus.textContent = '🧭 Nav: OK';
+        }
+
+        // Update results display
+        function updateResults(text) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.textContent += text;
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+
+        // Clear results
+        function clearResults() {
+            document.getElementById('results').textContent = '';
+            document.getElementById('recommendations').textContent = '';
+        }
+
+        // Initialize
+        initFeatureGrid();
+
+        // Auto-run debug on page load
+        setTimeout(runDebug, 1000);
+    </script>
+</body>
+</html>
