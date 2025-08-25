@@ -26,9 +26,6 @@ export function StudyPlanner() {
         dailyStreak
     } = useAppStore();
 
-    // Show minimal interface even without study plan to ensure sidebar is visible
-    const showMinimalInterface = !studyPlan.length;
-
     const currentDay = studyPlan.find(day => day.day === currentVisibleDay);
     const totalTasks = studyPlan.reduce((acc, day) => acc + day.tasks.length, 0);
     const completedTasks = studyPlan.reduce((acc, day) =>
@@ -40,7 +37,8 @@ export function StudyPlanner() {
         <div className="min-h-[calc(100vh-4rem)] flex">
             {/* Main Content */}
             <div className="flex-1 p-6">
-                {showMinimalInterface ? (
+                {/* Show minimal interface if no study plan */}
+                {studyPlan.length === 0 ? (
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -59,16 +57,10 @@ export function StudyPlanner() {
                             >
                                 Create Study Plan
                             </Button>
-                            <Button
-                                variant="outline"
-                                onClick={() => useAppStore.getState().generateStudyPlan()}
-                                className="w-full"
-                            >
-                                Generate with Current Settings
-                            </Button>
                         </div>
                     </motion.div>
                 ) : (
+                <>
                 {/* Header Stats */}
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
@@ -312,7 +304,9 @@ export function StudyPlanner() {
 
                 {/* Pomodoro Timer */}
                 <PomodoroTimer />
+                </>
                 )}
+            </div>
 
             {/* Progress Sidebar */}
             <ProgressSidebar />
