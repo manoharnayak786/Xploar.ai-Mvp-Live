@@ -206,7 +206,7 @@
             }
         }
 
-        // Run the actual debug script
+                // Run the actual debug script
         async function runDebugScript() {
             return new Promise((resolve) => {
                 const results = {
@@ -220,15 +220,25 @@
                 try {
                     const state = JSON.parse(localStorage.getItem('xploar_app_state') || '{}');
                     const currentUser = state.state?.currentUser;
+                    const activeFeature = state.state?.activeFeature;
 
                     results.checks.authentication = {
                         authenticated: !!currentUser,
-                        user: currentUser
+                        user: currentUser,
+                        activeFeature: activeFeature
                     };
 
                     if (!currentUser) {
-                        results.issues.push('❌ No current user found - sidebar will not show');
-                        results.recommendations.push('Complete authentication flow first');
+                        results.issues.push('❌ No current user found - stuck on authentication');
+                        results.recommendations.push('Try logging in or signing up');
+                    } else {
+                        console.log('✅ User authenticated:', currentUser);
+                        if (activeFeature === 'onboarding') {
+                            results.issues.push('⚠️ User authenticated but still on onboarding');
+                            results.recommendations.push('Complete the onboarding flow (Welcome → Goal → Time → Baseline)');
+                        } else {
+                            console.log('✅ User can access main app features');
+                        }
                     }
                 } catch (e) {
                     results.issues.push('❌ Error reading app state: ' + e.message);
@@ -241,12 +251,23 @@
                     'NEXT_PUBLIC_SITE_URL'
                 ];
 
+                let envIssues = 0;
                 requiredVars.forEach(varName => {
                     if (typeof window !== 'undefined' && !window[varName]) {
                         results.issues.push(`❌ Environment variable missing: ${varName}`);
-                        results.recommendations.push('Set environment variables in Vercel dashboard');
+                        envIssues++;
                     }
                 });
+
+                if (envIssues > 0) {
+                    results.recommendations.push(`Set ${envIssues} environment variables in Vercel dashboard`);
+                }
+
+                // 3. Check Onboarding Flow
+                results.checks.onboardingFlow = {
+                    shouldAdvanceAfterAuth: true,
+                    note: 'Auth should advance to Welcome step, not stay on Auth'
+                };
 
                 resolve(results);
             });

@@ -166,7 +166,29 @@
 
     results.checks.components = componentStatus;
 
-    // 6. Generate Report
+    // 6. Check Authentication Flow
+    console.log('\n🔐 AUTHENTICATION FLOW CHECK:');
+    try {
+        const state = JSON.parse(localStorage.getItem('xploar_app_state') || '{}');
+        const currentUser = state.state?.currentUser;
+        const activeFeature = state.state?.activeFeature;
+
+        if (!currentUser) {
+            console.log('❌ STATUS: Not authenticated - showing login screen');
+            results.issues.push('User not authenticated - complete login/signup');
+        } else if (activeFeature === 'onboarding') {
+            console.log('⚠️ STATUS: Authenticated but still on onboarding');
+            console.log('💡 SOLUTION: Complete onboarding flow to access main features');
+            results.issues.push('Complete onboarding flow (Welcome → Goal → Time → Baseline)');
+        } else {
+            console.log('✅ STATUS: Authenticated and can access main features');
+            console.log('🎉 You should see the sidebar with all features now!');
+        }
+    } catch (e) {
+        results.issues.push('Error checking auth flow: ' + e.message);
+    }
+
+    // 7. Generate Report
     console.log('\n📊 DEBUG REPORT:');
     console.log('================================');
     console.log(`Timestamp: ${results.timestamp}`);
