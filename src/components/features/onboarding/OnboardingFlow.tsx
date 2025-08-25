@@ -35,8 +35,22 @@ export function OnboardingFlow() {
     };
 
     const handlePlanGeneration = async () => {
-        await generateStudyPlan();
-        // The Zustand store will automatically navigate to the study planner
+        try {
+            console.log('🎯 Starting plan generation...');
+            console.log('Current study config:', useAppStore.getState().studyConfiguration);
+
+            await generateStudyPlan();
+
+            console.log('✅ Plan generated successfully');
+            console.log('Study plan:', useAppStore.getState().studyPlan);
+            console.log('Active feature:', useAppStore.getState().activeFeature);
+
+            // The Zustand store will automatically navigate to the study planner
+        } catch (error) {
+            console.error('❌ Plan generation failed:', error);
+            // Still try to navigate to study planner even if plan generation fails
+            useAppStore.getState().navigateTo('study-planner');
+        }
     };
 
     const renderStep = () => {

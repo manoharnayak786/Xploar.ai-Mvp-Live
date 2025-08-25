@@ -13,6 +13,10 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
 export function StudyPlanner() {
+    console.log('📅 StudyPlanner component rendered!');
+    console.log('Study plan length:', useAppStore.getState().studyPlan.length);
+    console.log('Current user:', useAppStore.getState().currentUser);
+
     const [dayRange, setDayRange] = useState({ start: 1, end: 5 });
     const {
         studyPlan,
@@ -22,29 +26,8 @@ export function StudyPlanner() {
         dailyStreak
     } = useAppStore();
 
-    if (!studyPlan.length) {
-        return (
-            <div className="p-8 text-center">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="max-w-md mx-auto"
-                >
-                    <Target className="h-12 w-12 text-electric-aqua mx-auto mb-4" />
-                    <h2 className="text-2xl font-bold mb-2">No Study Plan Found</h2>
-                    <p className="text-void-black/70 mb-4">
-                        You haven't created a study plan yet. Let's set up your personalized learning journey.
-                    </p>
-                    <Button
-                        variant="gradient"
-                        onClick={() => useAppStore.getState().navigateTo('onboarding')}
-                    >
-                        Create Study Plan
-                    </Button>
-                </motion.div>
-            </div>
-        );
-    }
+    // Show minimal interface even without study plan to ensure sidebar is visible
+    const showMinimalInterface = !studyPlan.length;
 
     const currentDay = studyPlan.find(day => day.day === currentVisibleDay);
     const totalTasks = studyPlan.reduce((acc, day) => acc + day.tasks.length, 0);
@@ -57,6 +40,35 @@ export function StudyPlanner() {
         <div className="min-h-[calc(100vh-4rem)] flex">
             {/* Main Content */}
             <div className="flex-1 p-6">
+                {showMinimalInterface ? (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="max-w-md mx-auto text-center"
+                    >
+                        <Target className="h-12 w-12 text-electric-aqua mx-auto mb-4" />
+                        <h2 className="text-2xl font-bold mb-2">Ready to Start Planning!</h2>
+                        <p className="text-void-black/70 mb-4">
+                            Let's create your personalized study plan to maximize your UPSC preparation.
+                        </p>
+                        <div className="space-y-2">
+                            <Button
+                                variant="gradient"
+                                onClick={() => useAppStore.getState().navigateTo('onboarding')}
+                                className="w-full"
+                            >
+                                Create Study Plan
+                            </Button>
+                            <Button
+                                variant="outline"
+                                onClick={() => useAppStore.getState().generateStudyPlan()}
+                                className="w-full"
+                            >
+                                Generate with Current Settings
+                            </Button>
+                        </div>
+                    </motion.div>
+                ) : (
                 {/* Header Stats */}
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
@@ -300,7 +312,7 @@ export function StudyPlanner() {
 
                 {/* Pomodoro Timer */}
                 <PomodoroTimer />
-            </div>
+                )}
 
             {/* Progress Sidebar */}
             <ProgressSidebar />
