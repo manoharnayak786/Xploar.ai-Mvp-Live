@@ -301,6 +301,8 @@ export interface AppState {
 export interface AppActions {
     // Existing actions
     loginWithPassword: (email: string, password: string) => Promise<void>;
+    signUpWithPassword: (email: string, password: string, name?: string) => Promise<void>;
+    requestPasswordReset: (email: string) => Promise<void>;
     signIn: (email: string, name: string) => void;
     signOut: () => void;
     upgradeToPro: () => void;

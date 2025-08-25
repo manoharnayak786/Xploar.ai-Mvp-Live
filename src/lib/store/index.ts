@@ -68,6 +68,32 @@ export const useAppStore = create<AppStore>()(
                     console.error(e);
                 }
             },
+            signUpWithPassword: async (email: string, password: string, name?: string) => {
+                try {
+                    const res = await fetch('/api/auth/signup', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password, name })
+                    });
+                    if (!res.ok) throw new Error('Signup failed');
+                    const { user } = await res.json();
+                    set({ currentUser: { id: user.id, email: user.email, name: name || user.email.split('@')[0] } as unknown as User });
+                } catch (e) {
+                    console.error(e);
+                }
+            },
+            requestPasswordReset: async (email: string) => {
+                try {
+                    const res = await fetch('/api/auth/reset', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email })
+                    });
+                    if (!res.ok) throw new Error('Reset request failed');
+                } catch (e) {
+                    console.error(e);
+                }
+            },
             signOut: () => set({ currentUser: null, activeFeature: FEATURES.ONBOARDING }),
             upgradeToPro: () => set({ isProUser: true }),
             downgradeFromPro: () => set({ isProUser: false }), // New Action

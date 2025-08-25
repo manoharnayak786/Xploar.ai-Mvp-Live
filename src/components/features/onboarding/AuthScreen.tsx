@@ -12,7 +12,7 @@ interface AuthScreenProps {
 }
 
 export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
-    const { signIn, loginWithPassword } = useAppStore();
+    const { signIn, loginWithPassword, signUpWithPassword, requestPasswordReset } = useAppStore();
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
@@ -24,11 +24,16 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
             await loginWithPassword(email, password);
             onAuthSuccess();
         } else {
-            // For now fallback to local sign-in simulation
-            signIn(email, name || 'Returning User');
+            await signUpWithPassword(email, password, name);
             onAuthSuccess();
         }
     };
+
+    const handleReset = async () => {
+        if (!email) return;
+        await requestPasswordReset(email);
+        alert('Password reset email sent (check your inbox)');
+    }
 
     return (
         <div className="max-w-md mx-auto">
@@ -70,10 +75,15 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                     <Button variant="gradient" size="lg" className="w-full" onClick={handleAuth}>
                         {isLogin ? 'Sign In' : 'Create Account'} <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
-                    <div className="text-center">
+                    <div className="flex items-center justify-between">
                         <Button variant="link" onClick={() => setIsLogin(!isLogin)}>
                             {isLogin ? "Don't have an account? Sign Up" : "Already have an account? Sign In"}
                         </Button>
+                        {isLogin && (
+                            <Button variant="link" onClick={handleReset}>
+                                Forgot password?
+                            </Button>
+                        )}
                     </div>
                 </CardContent>
             </Card>
