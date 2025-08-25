@@ -132,7 +132,9 @@ export const useAppStore = create<AppStore>()(
             joinStudyGroup: (groupId) => { console.log(`Joining group ${groupId}`); },
             sendGroupChatMessage: (message) => { console.log('Sending group message:', message); },
             createForumPost: (post) => { console.log('Creating forum post:', post); },
-            replyToForumPost: (reply) => { console.log('Replying to forum post:', reply); },
+            replyToForumPost: (postId: string, content: string) => {
+                console.log('Replying to forum post:', { postId, content });
+            },
             fetchMentors: async (topicId?: TopicID) => {
                 if (topicId) {
                     return SAMPLE_MENTORS.filter(m => m.expertise.includes(topicId));

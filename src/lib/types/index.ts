@@ -334,7 +334,7 @@ export interface AppActions {
     joinStudyGroup: (groupId: GroupID) => void;
     sendGroupChatMessage: (message: Omit<GroupChatMessage, 'sentAt'>) => void;
     createForumPost: (post: Omit<ForumPost, 'id' | 'createdAt' | 'isPinned' | 'isLocked'>) => void;
-    replyToForumPost: (reply: Omit<ForumReply, 'createdAt' | 'isAcceptedAnswer'>) => void;
+    replyToForumPost: (postId: string, content: string) => void;
     fetchMentors: (topicId?: TopicID) => Promise<MentorProfile[]>;
     bookMentorshipSession: (sessionData: { mentorId: MentorID, time: ISOString }) => Promise<{ success: boolean, sessionId: SessionID }>;
     fetchUpcomingWebinars: () => Promise<Webinar[]>;
