@@ -13,11 +13,10 @@ export default function HomePage() {
     // If user is not authenticated, redirect to onboarding
     if (!currentUser) {
       navigateTo(FEATURES.ONBOARDING);
-    } else if (activeFeature === FEATURES.ONBOARDING) {
-      // If user is authenticated but still on onboarding, redirect to study planner
-      navigateTo(FEATURES.STUDY_PLANNER);
     }
-  }, [currentUser, activeFeature, navigateTo]);
+    // If user is authenticated and not on onboarding, let MainLayout handle the feature routing
+    // Don't interfere with the onboarding flow - let it complete naturally
+  }, [currentUser, navigateTo]);
 
   // Return null since MainLayout handles all the rendering
   // based on the activeFeature in the store

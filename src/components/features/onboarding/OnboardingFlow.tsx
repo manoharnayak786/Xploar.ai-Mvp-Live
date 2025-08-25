@@ -42,7 +42,7 @@ export function OnboardingFlow() {
     const renderStep = () => {
         switch (step) {
             case 'auth':
-                return <AuthScreen onAuthSuccess={() => nextStep('auth')} />;
+                return <AuthScreen onAuthSuccess={() => nextStep('welcome')} />;
             case 'welcome':
                 return <OnboardingWelcome onNext={() => nextStep('welcome')} />;
             case 'goal':
@@ -54,7 +54,7 @@ export function OnboardingFlow() {
             case 'generating':
                 return <GeneratingPlanScreen onComplete={handlePlanGeneration} />;
             default:
-                return <AuthScreen onAuthSuccess={() => nextStep('auth')} />;
+                return <AuthScreen onAuthSuccess={() => nextStep('welcome')} />;
         }
     };
 
