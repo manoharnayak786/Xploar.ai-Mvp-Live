@@ -33,7 +33,7 @@ export function MainLayout({ children }: MainLayoutProps) {
     const { activeFeature, currentUser } = useAppStore();
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
-    const showAppLayout = currentUser && activeFeature !== FEATURES.ONBOARDING;
+    const showAppLayout = !!currentUser; // show sidebar/header when logged in, even during onboarding
 
     const renderFeature = () => {
         switch (activeFeature) {
