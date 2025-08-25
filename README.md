@@ -10,18 +10,74 @@
 ## 🚀 Quick Start
 
 ```bash
-# Install dependencies
+# 1. Install dependencies
 npm install
 
-# Run development server
+# 2. Setup Supabase (database & authentication)
+./setup-supabase.sh
+
+# 3. Configure environment variables
+# Edit .env.local with your Supabase credentials
+# Get them from: https://supabase.com/dashboard
+
+# 4. Test Supabase connection
+node test-supabase.js
+
+# 5. Run development server
 npm run dev
 
-# Run tests
+# 6. Run tests
 npm test
 
-# Build for production
+# 7. Build for production
 npm run build
 ```
+
+## 🗄️ Database Setup
+
+### 1. Create Supabase Project
+1. Go to [supabase.com](https://supabase.com)
+2. Create a new project
+3. Wait for setup to complete
+
+### 2. Configure Environment
+1. Run `./setup-supabase.sh` to create `.env.local`
+2. Go to your Supabase project dashboard
+3. Navigate to Settings > API
+4. Copy your Project URL and anon public key
+5. Update `.env.local`:
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+```
+
+### 3. Setup Database Schema
+1. Go to SQL Editor in your Supabase dashboard
+2. Copy contents of `supabase-schema.sql`
+3. Run the SQL to create required tables
+
+### 4. Test Connection
+```bash
+node test-supabase.js
+```
+
+### 5. Enable Authentication Providers (Optional)
+- Go to Authentication > Providers
+- Enable Google, GitHub, or other providers
+
+## 🔍 Troubleshooting
+
+### Authentication Issues
+- Check `.env.local` has correct Supabase credentials
+- Run `node test-supabase.js` to verify connection
+- Check browser console for detailed error messages
+
+### No Preview After Login
+- Verify database schema is applied
+- Check user data is being saved to Supabase
+- Check browser localStorage for session data
+- Use debug tools at `/debug.html`
 
 ## 🧪 Testing
 

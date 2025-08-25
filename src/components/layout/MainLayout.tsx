@@ -23,6 +23,7 @@ import { DailyChallenge } from '@/components/features/daily-challenge/DailyChall
 import { AIEvaluation } from '@/components/features/ai-coach/AIEvaluation';
 import { PricingPage } from '@/components/features/pricing/PricingPage';
 import { MultiModeLearning } from '@/components/features/multi-mode-learning/MultiModeLearning';
+import { AuthDebug } from '@/components/common/AuthDebug';
 
 
 interface MainLayoutProps {
@@ -140,6 +141,11 @@ export function MainLayout({ children }: MainLayoutProps) {
                     }}
                 />
             </div>
+
+            {/* Debug component - shows when ?debug=true in URL */}
+            {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('debug') === 'true' && (
+                <AuthDebug />
+            )}
         </div>
     );
 }
