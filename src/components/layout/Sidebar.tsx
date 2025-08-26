@@ -136,7 +136,7 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
     return (
         <motion.aside
             className={`fixed left-0 top-16 h-[calc(100vh-4rem)] ${isCollapsed ? 'w-[5.5rem]' : 'w-64'
-                } bg-ice-white/90 backdrop-blur-md shadow-sm border-r border-dark-blue/15 z-40 overflow-y-auto transition-all duration-300`}
+                } bg-ice-white/95 backdrop-blur-lg shadow-lg border-r border-dark-blue/15 z-40 overflow-y-auto transition-all duration-300`}
             initial={{ x: -100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.3 }}

@@ -30,7 +30,7 @@ interface MainLayoutProps {
     children?: React.ReactNode;
 }
 
-export function MainLayout({ children }: MainLayoutProps) {
+export function MainLayout(_children: MainLayoutProps) {
     const { activeFeature, currentUser } = useAppStore();
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
@@ -82,24 +82,26 @@ export function MainLayout({ children }: MainLayoutProps) {
             <div className="flex">
                 {showAppLayout && <Sidebar onCollapseChange={setSidebarCollapsed} />}
 
-                <main className={`flex-1 transition-all duration-300 ${showAppLayout ? (sidebarCollapsed ? 'ml-[5.5rem]' : 'ml-64') : ''
-                    }`}>
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={activeFeature}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{
-                                duration: 0.3,
-                                ease: "easeInOut"
-                            }}
-                            className={showAppLayout ? "min-h-[calc(100vh-4rem)]" : "min-h-screen"}
-                        >
-                            {renderFeature()}
-                            {children}
-                        </motion.div>
-                    </AnimatePresence>
+                <main className={`flex-1 transition-all duration-300 ${showAppLayout ? (sidebarCollapsed ? 'ml-[5.5rem]' : 'ml-64') : ''} overflow-hidden`}>
+                    <div className={`min-h-screen p-4 md:p-6 lg:p-8 ${showAppLayout ? 'pt-20' : ''}`}>
+                        <div className="max-w-7xl mx-auto">
+                            <AnimatePresence mode="wait">
+                                <motion.div
+                                    key={activeFeature}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -20 }}
+                                    transition={{
+                                        duration: 0.3,
+                                        ease: "easeInOut"
+                                    }}
+                                    className="w-full"
+                                >
+                                    {renderFeature()}
+                                </motion.div>
+                            </AnimatePresence>
+                        </div>
+                    </div>
                 </main>
             </div>
 

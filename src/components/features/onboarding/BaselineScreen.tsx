@@ -20,10 +20,11 @@ export function BaselineScreen({ onNext }: BaselineScreenProps) {
     const [selectedLevel, setSelectedLevel] = useState('');
 
     return (
-        <div className="max-w-2xl text-center">
-            <BarChart className="h-12 w-12 text-electric-aqua mx-auto mb-4" />
-            <h1 className="text-3xl font-bold text-void-black mb-2">What's your current preparation level?</h1>
-            <p className="text-void-black/70 mb-8">This helps us set the right pace for you.</p>
+        <div className="min-h-screen flex items-center justify-center px-4">
+            <div className="max-w-2xl w-full text-center">
+                <BarChart className="h-12 w-12 text-electric-aqua mx-auto mb-4" />
+                <h1 className="text-3xl font-bold text-void-black mb-2">What's your current preparation level?</h1>
+                <p className="text-void-black/70 mb-8">This helps us set the right pace for you.</p>
 
             <div className="space-y-4 mb-8">
                 {levels.map((level, index) => (
@@ -49,9 +50,10 @@ export function BaselineScreen({ onNext }: BaselineScreenProps) {
                 ))}
             </div>
 
-            <Button size="lg" onClick={onNext} disabled={!selectedLevel}>
-                Generate My Plan <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
+                <Button size="lg" onClick={onNext} disabled={!selectedLevel}>
+                    Generate My Plan <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+            </div>
         </div>
     );
 }

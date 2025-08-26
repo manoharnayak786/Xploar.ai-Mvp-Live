@@ -36,19 +36,20 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
     };
 
     return (
-        <div className="max-w-md mx-auto">
-            <motion.div
-                className="text-center mb-8"
-            >
+        <div className="min-h-screen flex items-center justify-center px-4 py-8 md:px-6 lg:px-8">
+            <div className="w-full max-w-md mx-auto">
+                <motion.div
+                    className="text-center mb-8"
+                >
                 <div className="inline-flex items-center space-x-2 mb-4">
-                    <div className="h-12 w-12 rounded-lg bg-dark-blue flex items-center justify-center">
-                        <Sparkles className="h-6 w-6 text-ice-white" />
+                    <div className="h-12 w-12 rounded-lg bg-dark-blue flex items-center justify-center" role="img" aria-label="xploar.ai logo">
+                        <Sparkles className="h-6 w-6 text-ice-white" aria-hidden="true" />
                     </div>
-                    <h1 className="text-4xl font-bold text-dark-blue">
+                    <h1 className="text-2xl md:text-4xl font-bold text-dark-blue">
                         xploar.ai
                     </h1>
                 </div>
-                <p className="text-lg text-void-black/70">
+                <p className="text-base md:text-lg text-void-black/70">
                     Your AI-Powered UPSC Preparation Companion
                 </p>
             </motion.div>
@@ -87,6 +88,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                     </div>
                 </CardContent>
             </Card>
+            </div>
         </div>
     );
 }

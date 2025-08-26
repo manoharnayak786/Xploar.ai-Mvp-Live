@@ -23,10 +23,11 @@ export function TimeScreen({ onNext }: TimeScreenProps) {
     };
 
     return (
-        <div className="max-w-2xl text-center">
-            <Clock className="h-12 w-12 text-electric-aqua mx-auto mb-4" />
-            <h1 className="text-3xl font-bold text-void-black mb-2">How much time can you commit daily?</h1>
-            <p className="text-void-black/70 mb-8">Consistency is key. Be realistic with your daily goal.</p>
+        <div className="min-h-screen flex items-center justify-center px-4">
+            <div className="max-w-2xl w-full text-center">
+                <Clock className="h-12 w-12 text-electric-aqua mx-auto mb-4" />
+                <h1 className="text-3xl font-bold text-void-black mb-2">How much time can you commit daily?</h1>
+                <p className="text-void-black/70 mb-8">Consistency is key. Be realistic with your daily goal.</p>
 
             <div className="grid grid-cols-4 gap-4 mb-8">
                 {hoursOptions.map((hours, index) => (
@@ -52,9 +53,10 @@ export function TimeScreen({ onNext }: TimeScreenProps) {
                 ))}
             </div>
 
-            <Button size="lg" onClick={onNext}>
-                Continue <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
+                <Button size="lg" onClick={onNext}>
+                    Continue <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+            </div>
         </div>
     );
 }

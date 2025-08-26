@@ -27,10 +27,11 @@ export function GoalScreen({ onNext }: GoalScreenProps) {
     };
 
     return (
-        <div className="max-w-2xl text-center">
-            <Target className="h-12 w-12 text-electric-aqua mx-auto mb-4" />
-            <h1 className="text-3xl font-bold text-void-black mb-2">What is your primary goal?</h1>
-            <p className="text-void-black/70 mb-8">This will help us tailor the study plan to your needs.</p>
+        <div className="min-h-screen flex items-center justify-center px-4">
+            <div className="max-w-2xl w-full text-center">
+                <Target className="h-12 w-12 text-electric-aqua mx-auto mb-4" />
+                <h1 className="text-3xl font-bold text-void-black mb-2">What is your primary goal?</h1>
+                <p className="text-void-black/70 mb-8">This will help us tailor the study plan to your needs.</p>
 
             <div className="space-y-4 mb-8">
                 {goals.map((goal, index) => (
@@ -56,9 +57,10 @@ export function GoalScreen({ onNext }: GoalScreenProps) {
                 ))}
             </div>
 
-            <Button size="lg" onClick={onNext} disabled={!selectedGoal}>
-                Continue <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
+                <Button size="lg" onClick={onNext} disabled={!selectedGoal}>
+                    Continue <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+            </div>
         </div>
     );
 }

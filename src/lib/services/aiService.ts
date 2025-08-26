@@ -34,7 +34,7 @@ class AIService {
     essay: string,
     criteria: EvaluationCriteria
   ): Promise<EssayEvaluation> {
-    const startTime = Date.now();
+    // const startTime = Date.now();
 
     // Calculate word count
     const wordCount = this.calculateWordCount(essay);
@@ -252,7 +252,7 @@ class AIService {
     return Math.min(60, structureScore);
   }
 
-  private evaluateAnalysis(essay: string, question: string): number {
+  private evaluateAnalysis(essay: string, _question: string): number {
     // Check for analytical depth
     const analysisIndicators = [
       'however', 'moreover', 'furthermore', 'therefore', 'consequently',

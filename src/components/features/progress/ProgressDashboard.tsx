@@ -171,7 +171,7 @@ export function ProgressDashboard() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {/* Mock Test History */}
-                            {mockTestHistory.slice(-5).reverse().map((test, index) => (
+                            {mockTestHistory.slice(-5).reverse().map((test) => (
                                 <div key={test.id} className="flex items-center space-x-3 p-2 rounded-lg bg-electric-aqua/5">
                                     <Target className="h-4 w-4 text-electric-aqua" />
                                     <div className="flex-1">

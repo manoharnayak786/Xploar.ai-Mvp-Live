@@ -26,9 +26,9 @@ export function OnboardingFlow() {
         }
     }, [currentUser, studyPlan]);
 
-    const nextStep = (currentStep: OnboardingStep) => {
+    const nextStep = () => {
         const steps: OnboardingStep[] = ['auth', 'welcome', 'goal', 'time', 'baseline', 'generating'];
-        const currentIndex = steps.indexOf(currentStep);
+        const currentIndex = steps.indexOf(step);
         if (currentIndex < steps.length - 1) {
             setStep(steps[currentIndex + 1]);
         }
@@ -56,19 +56,19 @@ export function OnboardingFlow() {
     const renderStep = () => {
         switch (step) {
             case 'auth':
-                return <AuthScreen onAuthSuccess={() => nextStep('welcome')} />;
+                return <AuthScreen onAuthSuccess={nextStep} />;
             case 'welcome':
-                return <OnboardingWelcome onNext={() => nextStep('welcome')} />;
+                return <OnboardingWelcome onNext={nextStep} />;
             case 'goal':
-                return <GoalScreen onNext={() => nextStep('goal')} />;
+                return <GoalScreen onNext={nextStep} />;
             case 'time':
-                return <TimeScreen onNext={() => nextStep('time')} />;
+                return <TimeScreen onNext={nextStep} />;
             case 'baseline':
-                return <BaselineScreen onNext={() => nextStep('baseline')} />;
+                return <BaselineScreen onNext={nextStep} />;
             case 'generating':
                 return <GeneratingPlanScreen onComplete={handlePlanGeneration} />;
             default:
-                return <AuthScreen onAuthSuccess={() => nextStep('welcome')} />;
+                return <AuthScreen onAuthSuccess={nextStep} />;
         }
     };
 

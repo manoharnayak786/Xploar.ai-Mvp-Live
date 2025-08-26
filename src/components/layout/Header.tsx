@@ -30,12 +30,12 @@ export function Header() {
 
     return (
         <motion.header
-            className="sticky top-0 z-50 w-full border-b border-dark-blue/15 bg-ice-white/80 backdrop-blur-md"
+            className="fixed top-0 left-0 right-0 z-50 w-full border-b border-dark-blue/15 bg-ice-white/95 backdrop-blur-lg shadow-sm"
             initial={{ y: -100 }}
             animate={{ y: 0 }}
             transition={{ duration: 0.3 }}
         >
-            <div className="container flex h-16 items-center justify-between px-4">
+            <div className="container flex h-16 items-center justify-between px-4 max-w-full">
                 {/* Logo */}
                 <motion.div
                     className="flex items-center space-x-2 cursor-pointer"

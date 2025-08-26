@@ -32,9 +32,9 @@ export function StudyPlanner() {
     const progressPercentage = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
 
     return (
-        <div className="min-h-[calc(100vh-4rem)] flex">
+        <div className="min-h-screen">
             {/* Main Content */}
-            <div className="flex-1 p-6">
+            <div className="w-full space-y-6">
                 {/* Show minimal interface if no study plan */}
                 {studyPlan.length === 0 ? (
                     <motion.div

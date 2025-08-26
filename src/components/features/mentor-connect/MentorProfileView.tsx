@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+// import { motion } from 'framer-motion'; // Not used in this component
 import { ChevronLeft, Calendar, CheckCircle } from 'lucide-react';
 import { MentorProfile, ISOString } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

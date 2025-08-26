@@ -3,22 +3,33 @@
 import { useEffect } from 'react';
 import { useAppStore } from '@/lib/store';
 import { FEATURES } from '@/lib/utils/constants';
+import { MainLayout } from '@/components/layout/MainLayout';
 
-// This component serves as the main entry point
-// The actual rendering is handled by MainLayout based on activeFeature
 export default function HomePage() {
-  const { currentUser, navigateTo } = useAppStore();
+  const { currentUser, activeFeature, navigateTo } = useAppStore();
 
   useEffect(() => {
-    // If user is not authenticated, redirect to onboarding
+    // Handle initial routing logic
     if (!currentUser) {
+      // User not authenticated - go to onboarding
       navigateTo(FEATURES.ONBOARDING);
+    } else {
+      // User is authenticated - check if they have completed onboarding
+      const hasStudyPlan = useAppStore.getState().studyPlan.length > 0;
+      if (!hasStudyPlan && activeFeature === FEATURES.ONBOARDING) {
+        // User is in onboarding but hasn't completed it yet - stay in onboarding
+        return;
+      } else if (!hasStudyPlan) {
+        // User needs to complete onboarding
+        navigateTo(FEATURES.ONBOARDING);
+      } else if (activeFeature === FEATURES.ONBOARDING) {
+        // User has completed onboarding - redirect to study planner
+        navigateTo(FEATURES.STUDY_PLANNER);
+      }
+      // If user has a study plan and is not in onboarding, let MainLayout handle the feature routing
     }
-    // If user is authenticated and not on onboarding, let MainLayout handle the feature routing
-    // Don't interfere with the onboarding flow - let it complete naturally
-  }, [currentUser, navigateTo]);
+  }, [currentUser, activeFeature, navigateTo]);
 
-  // Return null since MainLayout handles all the rendering
-  // based on the activeFeature in the store
-  return null;
+  // Return MainLayout to handle all rendering based on activeFeature
+  return <MainLayout />;
 }
